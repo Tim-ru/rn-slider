@@ -18,7 +18,11 @@
     "react-native-reanimated": "~2.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-unimodules": "~0.14.5",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "react-router-native": "^5.2.0",
+    "redux-thunk": "github:reduxjs/redux-thunk#master"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
