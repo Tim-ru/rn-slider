@@ -66,27 +66,29 @@ class Slider extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.sliderContainer}>
+                <View style={styles.screen}>
+                    <View style={styles.sliderContainer}>
 
-                    <View style={styles.imageContainer}>
-                        <Image style={styles.image} source={this.getImageSource(this.props.slideId)}></Image>
+                        <View style={styles.imageContainer}>
+                            <Image style={styles.image} source={this.getImageSource(this.props.slideId)}></Image>
+                        </View>
+                        <View style={styles.sliderButtons}>
+                            <TouchableOpacity onPress={this.prevSlide} style={styles.btn}>
+                                <Text style={styles.containerText}>Prev Slide</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.nextSlide} style={styles.btn}>
+                                <Text style={styles.containerText}>Next Slide</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={styles.sliderButtons}>
-                        <TouchableOpacity onPress={this.prevSlide} style={styles.btn}>
-                            <Text style={styles.containerText}>Prev Slide</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.nextSlide} style={styles.btn}>
-                            <Text style={styles.containerText}>Next Slide</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                        style={styles.btn}
+                        onPress={this.switchSource}
+                    >
+                        <Text style={styles.containerText}>Switch to {!this.props.remote ? 'local' : 'remote'}</Text>
+                    </TouchableOpacity>
+                    {/* <Link to="/"><Text>Back to main</Text></Link> */}
                 </View>
-                <TouchableOpacity
-                    style={styles.btn}
-                    onPress={this.switchSource}
-                >
-                    <Text style={styles.containerText}>Switch to {!this.props.remote ? 'local' : 'remote'}</Text>
-                </TouchableOpacity>
-                {/* <Link to="/"><Text>Back to main</Text></Link> */}
             </View>
         )
     }

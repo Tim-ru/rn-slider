@@ -37,6 +37,12 @@ const styles = StyleSheet.create({
         color: '#37DDE0',
         fontSize: 20
     },
+    screen: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center'
+    },
     image: {
         width: 250,
         height: 200,

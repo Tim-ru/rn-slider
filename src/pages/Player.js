@@ -6,7 +6,9 @@ import styles from '../styles/styles'
 const Player = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.containerText}>Player</Text>
+            <View style={styles.screen}>
+                <Text style={styles.containerText}>Player</Text>
+            </View>
         </View>
     )
 }
