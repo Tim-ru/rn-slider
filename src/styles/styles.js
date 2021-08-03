@@ -1,4 +1,7 @@
 import { StyleSheet } from "react-native";
+import { Dimensions } from 'react-native';
+
+const DW = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
     main: {
@@ -28,10 +31,11 @@ const styles = StyleSheet.create({
     },
     container: {
         backgroundColor: "#1F1F1E",
+        width: DW,
         flex: 1,
         display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     containerText: {
         color: '#37DDE0',
