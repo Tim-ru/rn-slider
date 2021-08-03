@@ -9,12 +9,12 @@ const localSounds = [
       url: sound0,
     },
     {
-      title: "track 1",
+      title: "Curve",
       id: 1,
       url: sound1,
     },
     {
-      title: "track 2",
+      title: "Out of Ordinary",
       id: 2,
       url: sound2,
     }
