@@ -17,6 +17,7 @@ class Slider extends React.Component {
                 img1,
                 img2,
             ],
+            
         }
     }
 
@@ -45,7 +46,6 @@ class Slider extends React.Component {
         } else {
             this.props.prevSlide(this.props.slideId - 1)
         }
-        console.log(this.props.slideId);
     }
 
     switchSource = () => {

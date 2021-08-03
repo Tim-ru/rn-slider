@@ -1,16 +1,19 @@
 import { StyleSheet } from "react-native";
+import { Dimensions } from 'react-native'
+
+let DW = Dimensions.get('window').width
 
 const styles = StyleSheet.create({
     main: {
         backgroundColor: "#9DC7B7",
         color: "white",
         display: 'flex',
-        flex: 1
+        flex: 1,
     },
     header: {
         flex: 1,
         justifyContent: 'flex-end',
-        flexDirection: 'column-reverse'
+        flexDirection: 'column-reverse',
     },
     headerInner: {
         backgroundColor: 'red',
@@ -18,7 +21,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         flexDirection: 'row',
         alignItems: 'center',
-        
     },
     linkStyle: {
         color: '#37DDE0',
@@ -28,16 +30,18 @@ const styles = StyleSheet.create({
     },
     container: {
         backgroundColor: "#1F1F1E",
-        flex: 1,
         display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start'
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center'
     },
     containerText: {
         color: '#37DDE0',
-        fontSize: 20
+        fontSize: 20,
     },
     screen: {
+        width: DW,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

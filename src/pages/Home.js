@@ -6,8 +6,8 @@ import styles from '../styles/styles'
 
 const Home = () => {
     return (
-        <View style={styles.screen}>
-            <View style={styles.container}>
+        <View style={styles.container}>
+            <View style={styles.screen}>
                 <Text style={styles.containerText}>Home</Text>
             </View>
         </View>

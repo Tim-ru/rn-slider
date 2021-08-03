@@ -11,7 +11,7 @@ import Slider from "../pages/Slider"
 
 function Routes() {
     return (
-                <Switch>
+                <Switch >
                     <Route path="/slider" component={Slider} />
                     <Route path="/player" component={Player} />
                     <Route path="/" component={Home} />

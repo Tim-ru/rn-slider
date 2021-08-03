@@ -1,4 +1,4 @@
-import { NEXT_SLIDE, PREV_SLIDE, SWITCH_SOURCE, SET_REMOTE } from "./actionTypes";
+import { NEXT_SLIDE, PREV_SLIDE, SWITCH_SOURCE, SET_REMOTE, SET_REMOTE_AUDIO } from "./actionTypes";
 
 function nextSlide(value) {
     return {
@@ -28,9 +28,17 @@ function setRemote(images) {
     }
 }
 
+function setRemoteAudio(audio) {
+    return {
+        type: SET_REMOTE_AUDIO,
+        payload: audio
+    }
+}
+
 export const actions = {
     nextSlide,
     prevSlide,
     switchSource,
     setRemote,
+    setRemoteAudio,
 }

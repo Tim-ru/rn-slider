@@ -55,8 +55,11 @@ export default class App extends React.Component {
                 </TouchableOpacity>
 
               </View>
-              <Routes style={styles.container} />
 
+              <View style={styles.screen}>
+                <Routes style={styles.container} />
+              </View>
+              
             </View>
           </View>
         </NativeRouter>
