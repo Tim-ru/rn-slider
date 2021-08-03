@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { actions } from '../redux/action'
 import styles from '../styles/styles'
+import { img0, img1, img2 } from '../img/images'
 
 
 class Slider extends React.Component {
@@ -12,9 +13,9 @@ class Slider extends React.Component {
         console.log(props);
         this.state = {
             localImages: [
-                require('../img/0.jpg'),
-                require("../img/1.jpg"),
-                require("../img/2.jpg"),
+                img0,
+                img1,
+                img2,
             ],
         }
     }
@@ -51,8 +52,15 @@ class Slider extends React.Component {
         this.props.switchSource(!this.props.remote)
     }
 
-    get images () {
+    get images() {
         return !this.props.remote ? this.state.localImages : this.props.remoteImages
+    }
+
+    getImageSource(index = 0) {
+        if (this.props.remote) {
+            return { uri: this.props.remoteImages[index] }
+        }
+        return this.state.localImages[index]
     }
 
     render() {
@@ -61,10 +69,7 @@ class Slider extends React.Component {
                 <View style={styles.sliderContainer}>
 
                     <View style={styles.imageContainer}>
-                        {!this.props.remote ?
-                            <Image style={styles.image} source={this.state.localImages[this.props.slideId]}></Image> :
-                            <Image style={styles.image} source={{ uri: this.props.remoteImages[this.props.slideId] }}></Image>
-                        }
+                        <Image style={styles.image} source={this.getImageSource(this.props.slideId)}></Image>
                     </View>
                     <View style={styles.sliderButtons}>
                         <TouchableOpacity onPress={this.prevSlide} style={styles.btn}>
