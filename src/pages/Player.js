@@ -1,17 +1,11 @@
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native';
 import styles from '../styles/styles'
-import TrackPlayer, {
-    State,
-    Event,
-    useTrackPlayerProgress,
-    usePlaybackState,
-    useTrackPlayerEvents
-} from "react-native-track-player";
+import TrackPlayer, { Capability, updateMetadataForTrack, TrackMetadata } from "react-native-track-player";
 import localSounds from '../snd/sounds'
 import { connect } from 'react-redux'
 import { actions } from '../redux/action'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 class Player extends React.Component {
     constructor(props) {
@@ -20,7 +14,8 @@ class Player extends React.Component {
             isPlaying: false,
             audioId: 0,
             playlist: [],
-            title: ''
+            artist: '',
+            title: '',
         }
     }
 
@@ -33,37 +28,73 @@ class Player extends React.Component {
             await this.props.setRemoteAudio(json)
             this.setState({ playlist: this.props.remoteAudio })
         }
-        // преобразовние масиива remoteSounds
+
+        // преобразовние массива remoteSounds
         let remoteSounds = []
         await this.props.remoteAudio.map((e) => {
             remoteSounds.push({
-                id: this.props.remoteAudio.indexOf(e) + this.props.remoteAudio.length,
                 url: e,
-                title: `track ${this.props.remoteAudio.indexOf(e)}`
             })
         })
 
         // соединение localSounds и remoteSounds
-        await this.setState({ playlist: localSounds.concat(remoteSounds) })
+        this.setState({ playlist: localSounds.concat(remoteSounds) })
+
+        TrackPlayer.updateOptions({
+            stopWithApp: true,
+            alwaysPauseOnInterruption: true,
+            capabilities: [
+                TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+                TrackPlayer.CAPABILITY_PLAY,
+                TrackPlayer.CAPABILITY_PAUSE,
+                TrackPlayer.CAPABILITY_STOP,
+                TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+            ],
+            compactCapabilities: [
+                TrackPlayer.CAPABILITY_PLAY,
+                TrackPlayer.CAPABILITY_PAUSE,
+            ]
+        });
+        await this.updateMetadata()
+        await TrackPlayer.add(this.state.playlist)
+        this.capability()
         console.log(this.state.playlist);
-        await TrackPlayer.add(this.state.playlist);
     }
 
-
-
-    onChange = async () => {
-        let trackIndex = await TrackPlayer.getCurrentTrack();
-        let trackObject = await TrackPlayer.getTrack(trackIndex);
-        this.setState({ title: trackObject.title })
-        this.setState({ audioId: this.state.playlist.map((obj) => obj.id )})
-        console.log(trackObject);
+    componentWillUnmount() {
+        TrackPlayer.stop();
     }
 
-    togglePlayback = async () => {
-        await TrackPlayer.add(this.state.playlist);
+    capability = () => {
+        TrackPlayer.addEventListener('remote-previous', () => this.prevAudio())
+        TrackPlayer.addEventListener('remote-play', () => this.togglePlayback())
+        TrackPlayer.addEventListener('remote-pause', () => this.togglePlayback())
+        TrackPlayer.addEventListener('remote-stop', () => TrackPlayer.stop())
+        TrackPlayer.addEventListener('remote-next', () => this.nextAudio())
+    }
+
+    updateMetadata = async () => {
+        TrackPlayer.addEventListener('playback-metadata-received', async (e) => {
+        await TrackPlayer.add(this.state.playlist)
+
+            const currentTrack = await TrackPlayer.getCurrentTrack();
+            const trackObject = await TrackPlayer.getTrack(currentTrack);
+
+            if (trackObject.title == '') {
+                trackObject.title = 'Неизвестно'
+            }
+            if (trackObject.artist == '') {
+                trackObject.artist = 'Неизвестный'
+            }
+            await TrackPlayer.updateMetadataForTrack(currentTrack, { id: trackObject.id, title: e.title, artist: e.artist });
+            this.setState({ id: trackObject.id, title: trackObject.title, artist: trackObject.artist })
+        });
+
+    }
+
+    togglePlayback =  async () => {
+        await this.updateMetadata()
         await TrackPlayer.play();
-        
-        this.onChange()
         if (this.state.isPlaying) {
             await TrackPlayer.pause()
             this.setState({ isPlaying: false })
@@ -76,37 +107,49 @@ class Player extends React.Component {
     nextAudio = async () => {
         try {
             await TrackPlayer.skipToNext();
-            this.onChange()
+            await TrackPlayer.play();
+            await this.updateMetadata()
+            this.setState({ isPlaying: true })
+
         } catch (_) { }
     }
 
     prevAudio = async () => {
         try {
             await TrackPlayer.skipToPrevious();
-            this.onChange()
+            await TrackPlayer.play();
+            await this.updateMetadata()
+            this.setState({ isPlaying: true })
+
         } catch (_) { }
     }
 
-    getTrackName = async (objArray) => {
-        let result = objArray.map(a => a.title);
-        console.log(result);
-    }
+    // getTrackName = async (objArray) => {
+    //     let result = objArray.map(a => a.title);
+    //     console.log(result);
+    // }
 
     render() {
         return (
             <View style={styles.container}>
                 <View style={styles.screen}>
+                    <Text style={styles.trackTitle}>{this.state.artist} - {this.state.title}</Text>
 
-                    <TouchableOpacity onPress={this.togglePlayback}>
-                        <Icon name="pause" size={40} color="#920" />
-                    </TouchableOpacity>
-                    <Text style={{ backgroundColor: '#fff' }}>{this.state.title}</Text>
-                    <TouchableOpacity onPress={this.nextAudio}>
-                        <Text style={styles.containerText}>Next</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.prevAudio}>
-                        <Text style={styles.containerText}>Prev</Text>
-                    </TouchableOpacity>
+                    <View style={styles.playerButtons}>
+                        <TouchableOpacity onPress={this.prevAudio}>
+                            <Icon name="play-skip-back-outline" size={40} color="#920" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.togglePlayback}>
+                            {this.state.isPlaying === true ?
+                                <Icon name="pause-outline" size={40} color="#920" /> :
+                                <Icon name="play-outline" size={40} color="#920" />
+                            }
+
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.nextAudio}>
+                            <Icon name="play-skip-forward-outline" size={40} color="#920" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View >
         )

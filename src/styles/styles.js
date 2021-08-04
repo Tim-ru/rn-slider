@@ -16,14 +16,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column-reverse',
     },
     headerInner: {
-        backgroundColor: 'red',
+        backgroundColor: '#111',
         display: 'flex',
         justifyContent: 'space-around',
         flexDirection: 'row',
         alignItems: 'center',
     },
     linkStyle: {
-        color: '#37DDE0',
+        color: '#920',
         fontSize: 20,
         paddingVertical: 10,
         textDecorationLine: "underline"
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     containerText: {
-        color: '#37DDE0',
+        color: '#920',
         fontSize: 20,
     },
     screen: {
@@ -63,12 +63,23 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textTransform: 'uppercase',
         borderWidth: 2,
-        borderColor:'rgb(246, 83, 83)',
+        borderColor:'#920',
         margin: 10,
         fontSize: 18
     },
     sliderButtons: {
         flexDirection: 'row'
+    },
+    playerButtons: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    },
+    trackTitle: {
+        color: 'rgb(246, 66, 66)',
+        fontSize: 20,
+        paddingVertical: 10
     }
 });
 
