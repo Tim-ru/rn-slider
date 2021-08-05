@@ -10,7 +10,6 @@ import { img0, img1, img2 } from '../img/images'
 class Slider extends React.Component {
     constructor(props) {
         super(props)
-        console.log(props);
         this.state = {
             localImages: [
                 img0,

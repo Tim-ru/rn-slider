@@ -26,19 +26,8 @@ class Player extends React.Component {
         // создание remoteAudio в redux
         if (json.length) {
             await this.props.setRemoteAudio(json)
-            this.setState({ playlist: this.props.remoteAudio })
         }
 
-        // преобразовние массива remoteSounds
-        let remoteSounds = []
-        await this.props.remoteAudio.map((e) => {
-            remoteSounds.push({
-                url: e,
-            })
-        })
-
-        // соединение localSounds и remoteSounds
-        this.setState({ playlist: localSounds.concat(remoteSounds) })
 
         TrackPlayer.updateOptions({
             stopWithApp: true,
@@ -55,10 +44,25 @@ class Player extends React.Component {
                 TrackPlayer.CAPABILITY_PAUSE,
             ]
         });
-        await this.updateMetadata()
-        await TrackPlayer.add(this.state.playlist)
+
         this.capability()
-        console.log(this.state.playlist);
+    }
+
+    async componentDidUpdate() {
+        // console.log(this.props.remoteAudio.length);
+        if (this.props.remoteAudio.length) {
+            this.setState({ playlist: this.props.remoteAudio })
+
+            // преобразовние массива remoteSounds
+            let remoteSounds = this.props.remoteAudio.map(url => { return { url }})
+
+            // соединение localSounds и remoteSounds
+            this.setState({ playlist: localSounds.concat(remoteSounds) })
+            
+            this.props.remoteAudio.length = 0
+            await this.updateMetadata()
+            await TrackPlayer.add(this.state.playlist)
+        }
     }
 
     componentWillUnmount() {
@@ -75,7 +79,7 @@ class Player extends React.Component {
 
     updateMetadata = async () => {
         TrackPlayer.addEventListener('playback-metadata-received', async (e) => {
-        await TrackPlayer.add(this.state.playlist)
+            await TrackPlayer.add(this.state.playlist)
 
             const currentTrack = await TrackPlayer.getCurrentTrack();
             const trackObject = await TrackPlayer.getTrack(currentTrack);
@@ -92,7 +96,7 @@ class Player extends React.Component {
 
     }
 
-    togglePlayback =  async () => {
+    togglePlayback = async () => {
         await this.updateMetadata()
         await TrackPlayer.play();
         if (this.state.isPlaying) {
