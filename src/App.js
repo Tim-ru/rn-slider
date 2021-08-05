@@ -9,6 +9,7 @@ import Routes from './routes/routes'
 import styles from './styles/styles'
 import { registerRootComponent } from 'expo';
 
+
 const store = createStore(reducer, applyMiddleware(thunk))
 
 export default class App extends React.Component {

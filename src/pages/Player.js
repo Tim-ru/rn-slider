@@ -20,16 +20,16 @@ class Player extends React.Component {
     }
 
     async componentDidMount() {
-        let response = await fetch("https://imagesapi.osora.ru/?isAudio=true");
 
+        let response = await fetch("https://imagesapi.osora.ru/?isAudio=true");
         let json = await response.json();
         // создание remoteAudio в redux
         if (json.length) {
-            await this.props.setRemoteAudio(json)
+            this.props.setRemoteAudio(json)
         }
 
 
-        TrackPlayer.updateOptions({
+        await TrackPlayer.updateOptions({
             stopWithApp: true,
             alwaysPauseOnInterruption: true,
             capabilities: [
@@ -44,24 +44,23 @@ class Player extends React.Component {
                 TrackPlayer.CAPABILITY_PAUSE,
             ]
         });
-
+        TrackPlayer.registerPlaybackService(() => require('../service'));
+        TrackPlayer.setupPlayer()
+        TrackPlayer.add(this.state.playlist)
         this.capability()
     }
 
     async componentDidUpdate() {
-        // console.log(this.props.remoteAudio.length);
-        if (this.props.remoteAudio.length) {
-            this.setState({ playlist: this.props.remoteAudio })
+        if (this.props.remoteAudio.length && !this.state.playlist.length) {
 
             // преобразовние массива remoteSounds
-            let remoteSounds = this.props.remoteAudio.map(url => { return { url }})
+            let remoteSounds = this.props.remoteAudio.map(url => { return { url } })
 
             // соединение localSounds и remoteSounds
             this.setState({ playlist: localSounds.concat(remoteSounds) })
-            
-            this.props.remoteAudio.length = 0
-            await this.updateMetadata()
-            await TrackPlayer.add(this.state.playlist)
+
+            // await TrackPlayer.add(this.state.playlist)
+            // console.log(this.state.playlist
         }
     }
 
@@ -70,34 +69,33 @@ class Player extends React.Component {
     }
 
     capability = () => {
-        TrackPlayer.addEventListener('remote-previous', () => this.prevAudio())
-        TrackPlayer.addEventListener('remote-play', () => this.togglePlayback())
-        TrackPlayer.addEventListener('remote-pause', () => this.togglePlayback())
+        TrackPlayer.addEventListener('remote-previous', this.prevAudio)
+        TrackPlayer.addEventListener('remote-play', this.togglePlayback)
+        TrackPlayer.addEventListener('remote-pause', this.togglePlayback)
         TrackPlayer.addEventListener('remote-stop', () => TrackPlayer.stop())
-        TrackPlayer.addEventListener('remote-next', () => this.nextAudio())
+        TrackPlayer.addEventListener('remote-next', this.nextAudio)
+        TrackPlayer.addEventListener('playback-track-changed', this.updateMetadata);
+        TrackPlayer.addEventListener('playback-metadata-received', this.updateMetadata);
     }
 
-    updateMetadata = async () => {
-        TrackPlayer.addEventListener('playback-metadata-received', async (e) => {
-            await TrackPlayer.add(this.state.playlist)
-
-            const currentTrack = await TrackPlayer.getCurrentTrack();
-            const trackObject = await TrackPlayer.getTrack(currentTrack);
-
-            if (trackObject.title == '') {
-                trackObject.title = 'Неизвестно'
-            }
-            if (trackObject.artist == '') {
-                trackObject.artist = 'Неизвестный'
-            }
-            await TrackPlayer.updateMetadataForTrack(currentTrack, { id: trackObject.id, title: e.title, artist: e.artist });
-            this.setState({ id: trackObject.id, title: trackObject.title, artist: trackObject.artist })
-        });
-
+    updateMetadata = async (e) => {
+        console.log(e)
+        // const trackObject = await TrackPlayer.getTrack(currentTrack);
+        // console.log(trackObject)
+        // if (trackObject.title == '') {
+        //     trackObject.title = 'Неизвестно'
+        // }
+        // if (trackObject.artist == '') {
+        //     trackObject.artist = 'Неизвестный'
+        // }
+        this.setState({ title: e.title, artist: e.artist });
+        const currentTrack = await TrackPlayer.getCurrentTrack();
+        await TrackPlayer.updateMetadataForTrack(currentTrack, { title: e.title, artist: e.artist });
+        //console.log(this.state.playlist);
     }
 
     togglePlayback = async () => {
-        await this.updateMetadata()
+        // await this.updateMetadata()
         await TrackPlayer.play();
         if (this.state.isPlaying) {
             await TrackPlayer.pause()
@@ -112,7 +110,7 @@ class Player extends React.Component {
         try {
             await TrackPlayer.skipToNext();
             await TrackPlayer.play();
-            await this.updateMetadata()
+            // await this.updateMetadata()
             this.setState({ isPlaying: true })
 
         } catch (_) { }
@@ -122,7 +120,7 @@ class Player extends React.Component {
         try {
             await TrackPlayer.skipToPrevious();
             await TrackPlayer.play();
-            await this.updateMetadata()
+            // await this.updateMetadata()
             this.setState({ isPlaying: true })
 
         } catch (_) { }
